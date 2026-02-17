@@ -1,5 +1,5 @@
 #!/usr/bin/Rscript
-## Author: Taylor Falk
+## Author: Sean Pocock
 ## tfalk@bu.edu
 ## BU BF591
 ## Assignment Bioinformatics Basics
@@ -35,8 +35,11 @@ suppressPackageStartupMessages(library(tidyverse))
 #' @examples 
 #' `data <- load_expression('/project/bf528/project_1/data/example_intensity_data.csv')`
 load_expression <- function(filepath) {
-    return(NULL)
+  data_tibble <- read_csv(filepath)
+  return(data_tibble)
 }
+sample_data <- load_expression('/projectnb/bf530/students/spocock/assignment_3/data/example_intensity_data_subset.csv')
+sample_data
 
 #' Filter 15% of the gene expression values.
 #'
@@ -51,8 +54,20 @@ load_expression <- function(filepath) {
 #' `tibble [40,158 × 1] (S3: tbl_df/tbl/data.frame)`
 #' `$ probe: chr [1:40158] "1007_s_at" "1053_at" "117_at" "121_at" ...`
 filter_15 <- function(tibble){
-    return(NULL)
+  filtered_to_15 <- tibble %>%
+    pivot_longer(cols = starts_with("GSM"),
+                 names_to = "sample_ID",
+                 values_to = "expression") %>%
+    group_by(probe) %>%
+    summarize(higher_count = sum(expression > log2(15)),
+              count = n()) %>%
+    mutate(pct = higher_count / count * 100) %>%
+    filter(pct > 15) %>%
+    dplyr::select(probe)
+  return(filtered_to_15)
 }
+output <- filter_15(sample_data) 
+output
 
 #### Gene name conversion ####
 
@@ -73,14 +88,19 @@ filter_15 <- function(tibble){
 #' @examples 
 #' `> affy_to_hgnc(tibble(c('202860_at', '1553551_s_at')))`
 #' `affy_hg_u133_plus_2 hgnc_symbol`
-#' `1        1553551_s_at      MT-ND1`
+#' `1        1553551_s_at      MT-ND1` 
 #' `2        1553551_s_at       MT-TI`
 #' `3        1553551_s_at       MT-TM`
 #' `4        1553551_s_at      MT-ND2`
 #' `5           202860_at     DENND4B`
 affy_to_hgnc <- function(affy_vector) {
-    return(NULL)
+  mouse_mart <- useEnsembl(biomart = "ensembl",
+                           dataset = "mmusculus_gene_ensembl",
+                           mirror = "useast")
+  return(mouse_mart)
 }
+filtered_15pct_data <- filter_15(sample_data)
+affy_to_hgnc(filtered_15pct_data)
 
 #' Reduce a tibble of expression data to only the rows in good_genes or bad_genes.
 #'
