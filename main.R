@@ -13,7 +13,7 @@
 
 if (!require("BiocManager", quietly = TRUE)){
   install.packages("BiocManager")
-}
+} 
 if (!require("biomaRt", quietly = TRUE)){
   BiocManager::install("biomaRt")
 }
