@@ -233,5 +233,10 @@ this plot.
 ```{r boxplot from long format data using ggplot2, echo=FALSE}
 library(ggplot2)
 
+ggplot(long_format_data, aes(x = hgnc_symbol, y = value, fill = gene_set)) +
+  geom_boxplot() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  scale_fill_manual(values = c("bad" = "red", "good" = "green"))
+
 
 ```
